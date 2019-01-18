@@ -15,18 +15,29 @@ class ReceiptTest extends TestCase {
         unset($this->Receipt);
     }
 
-    /*Siin võrreldakse, kas input ja output on võrdsed. Tuleb teade*/
-
-    public function testTotal() {
-        $input = [0,2,5,8];
-        $output = $this->Receipt->total($input);
+    /* Siin arvutattakse kokku lõpusummat. Lisatakse arvutuskäiku ka kupong */
+    /**
+     * @dataProvider provideTotal
+     */
+    public function testTotal($items, $expected) {
+        $coupon = null;
+        $output = $this->Receipt->total($items, $coupon);
         $this->assertEquals(
-            15,
+            $expected,
             $output,
-            'When summing the total should equal 15'
+            "When summing the total should equal {$expected}"
         );
     }
-/* Lisatakse kupong koodi. Antakse teada lõppsummast */
+
+    public function provideTotal() {
+        return [
+            [[1,2,5,8], 16],
+            [[-1,2,5,8], 14],
+            [[1,2,8], 11],
+        ];
+    }
+
+    /*Siin võrreldakse, kas input ja output on võrdsed. Tuleb teade*/
     public function testTotalAndCoupon() {
         $input = [0,2,5,8];
         $coupon = 0.20;
@@ -38,13 +49,21 @@ class ReceiptTest extends TestCase {
         );
     }
 
+    /*Arvutatakse maksulisamise järgne summa. Tuleb teade*/
     public function testPostTaxTotal() {
+        $items = [1,2,5,8];
+        $tax = 0.20;
+        $coupon = null;
         $Receipt = $this->getMockBuilder('TDD\Receipt')
             ->setMethods(['tax', 'total'])
             ->getMock();
-        $Receipt->method('total')
+        $Receipt->expects($this->once())
+            ->method('total')
+            ->with($items, $coupon)
             ->will($this->returnValue(10.00));
-        $Receipt->method('tax')
+        $Receipt->expects($this->once())
+            ->method('tax')
+            ->with(10.00, $tax)
             ->will($this->returnValue(1.00));
         $result = $Receipt->postTaxTotal([1,2,5,8], 0.20, null);
         $this->assertEquals(11.00, $result);
