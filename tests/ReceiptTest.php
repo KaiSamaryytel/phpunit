@@ -28,10 +28,10 @@ class ReceiptTest extends TestCase {
             "When summing the total should equal {$expected}"
         );
     }
-
+/*siin testitakse, kas lõppsumma on õige*/
     public function provideTotal() {
         return [
-            [[1,2,5,8], 16],
+            'ints totaling 16' => [[1,2,5,8], 16],
             [[-1,2,5,8], 14],
             [[1,2,8], 11],
         ];
