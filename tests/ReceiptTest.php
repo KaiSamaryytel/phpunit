@@ -3,32 +3,31 @@ namespace TDD\Test;
 require dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR .'autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use TDD\Receipt;
+use TDD\Receipt;    /*alusfail Receipt */
 
-/*Siin luuakse Receipt*/
+/**Siin luuakse TestCase klass, mis on avalik meetod ning ligipääsetav teistest klassidest.*/
 class ReceiptTest extends TestCase {
     public function setUp() {
-        $this->Receipt = new Receipt();
+        $this->Receipt = new Receipt(); /*Luuakse uus objekt nimega Receipt*/
     }
-
+/**Dummy object- Üks osa TestCase klassist*/
     public function tearDown() {
         unset($this->Receipt);
     }
 
-    /* Siin arvutattakse kokku lõpusummat. Lisatakse arvutuskäiku ka kupong */
-    /**
-     * @dataProvider provideTotal
-     */
+    /** Siin arvutattakse kokku lõpusummat. Lisatakse arvutuskäiku ka kupong
+      @dataProvider provideTotal */
     public function testTotal($items, $expected) {
         $coupon = null;
         $output = $this->Receipt->total($items, $coupon);
+       /* Kinnitatakse testTotal eeldatav väärtus*/
         $this->assertEquals(
             $expected,
             $output,
             "When summing the total should equal {$expected}"
         );
     }
-/*siin testitakse, kas lõppsumma on õige*/
+    /*Andmeedastuse funktsiooni lisamine, mis sätestab erinevad sisendväärtused*/
     public function provideTotal() {
         return [
             'ints totaling 16' => [[1,2,5,8], 16],
@@ -37,19 +36,20 @@ class ReceiptTest extends TestCase {
         ];
     }
 
-    /*Siin võrreldakse, kas input ja output on võrdsed. Tuleb teade*/
+    /* Siin võrreldakse, kas input ja output on võrdsed, võrreldakse oodatava tulemusega.
+     Tuleb teade, kui on error.*/
     public function testTotalAndCoupon() {
         $input = [0,2,5,8];
         $coupon = 0.20;
         $output = $this->Receipt->total($input, $coupon);
         $this->assertEquals(
-            15,
+            12,
             $output,
-            'When summing the total should equal 15'
+            'When summing the total should equal 12'
         );
     }
 
-    /*Arvutatakse maksulisamise järgne summa. Tuleb teade*/
+    /*Arvutatakse maksulisamise järgne summa. Tuleb teade, kui on error*/
     public function testPostTaxTotal() {
         $items = [1,2,5,8];
         $tax = 0.20;
@@ -69,7 +69,7 @@ class ReceiptTest extends TestCase {
         $this->assertEquals(11.00, $result);
     }
 
-/*Siin lisatakse summale maksuosa ja antakse. Tuleb teade summa kohta. */
+/*Siin lisatakse summale maksuosa ja võrreldakse oodatava tulemusega. Errori korral tuleb veateade. */
     public function testTax() {
         $inputAmount = 10.00;
         $taxInput = 0.10;
